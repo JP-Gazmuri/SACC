@@ -42,7 +42,7 @@ module Api
             if ord
                 ord.state = 1
                 ord.save
-                password = ord.deposit_password
+                password1 = ord.deposit_password
             end
 
             locker = @station.lockers.where(number: 2).first
@@ -50,7 +50,7 @@ module Api
             if ord
                 ord.state = 1
                 ord.save
-                password = ord.deposit_password
+                password2 = ord.deposit_password
             end
 
             locker = @station.lockers.where(number: 3).first
@@ -58,7 +58,7 @@ module Api
             if ord
                 ord.state = 1
                 ord.save
-                password = ord.deposit_password
+                password3 = ord.deposit_password
             end
             render json: { password1: password1,password2: password2,password3: password3, }
         end        
