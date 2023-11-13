@@ -12,5 +12,8 @@ Rails.application.routes.draw do
       post "report_retire", on: :collection
       post "update", on: :collection
     end
+    resources :ecommerce do
+      post "reserve_locker", on: :collection
+    end
   end 
 end
