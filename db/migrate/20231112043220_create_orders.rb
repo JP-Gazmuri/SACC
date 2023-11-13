@@ -1,7 +1,7 @@
 class CreateOrders < ActiveRecord::Migration[7.0]
   def change
     create_table :orders do |t|
-      t.references :ecommerces, foreign_key: { to_table: :ecommerces }, null: false
+      t.references :ecommerce, foreign_key: { to_table: :ecommerces }, null: false
       t.integer :state, default: 0
       t.string :deposit_password
       t.string :retrieve_password

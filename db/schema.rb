@@ -32,18 +32,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_12_050955) do
   end
 
   create_table "lockers", force: :cascade do |t|
-    t.bigint "locker_stations_id", null: false
+    t.bigint "locker_station_id", null: false
+    t.integer "number"
     t.integer "state", default: 0
     t.integer "height"
     t.integer "width"
     t.integer "length"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["locker_stations_id"], name: "index_lockers_on_locker_stations_id"
+    t.index ["locker_station_id"], name: "index_lockers_on_locker_station_id"
   end
 
   create_table "orders", force: :cascade do |t|
-    t.bigint "ecommerces_id", null: false
+    t.bigint "ecommerce_id", null: false
     t.integer "state", default: 0
     t.string "deposit_password"
     t.string "retrieve_password"
@@ -59,11 +60,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_12_050955) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "locker_id", null: false
-    t.index ["ecommerces_id"], name: "index_orders_on_ecommerces_id"
+    t.index ["ecommerce_id"], name: "index_orders_on_ecommerce_id"
     t.index ["locker_id"], name: "index_orders_on_locker_id"
   end
 
-  add_foreign_key "lockers", "locker_stations", column: "locker_stations_id"
-  add_foreign_key "orders", "ecommerces", column: "ecommerces_id"
+  add_foreign_key "lockers", "locker_stations"
+  add_foreign_key "orders", "ecommerces"
   add_foreign_key "orders", "lockers"
 end
