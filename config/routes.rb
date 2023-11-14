@@ -12,9 +12,14 @@ Rails.application.routes.draw do
       post "report_retire", on: :collection
       post "update", on: :collection
     end
+
+
     resources :ecommerce do
       post "available_lockers",on: :collection
       post "reserve_locker", on: :collection
     end
-  end 
+  end
+
+  resources :stations
+
 end

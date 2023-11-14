@@ -1,0 +1,28 @@
+<% lockers = @station.lockers %>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12"> <!-- Use the appropriate column size based on your design -->
+      <div class="card w-100">
+        <div class="card-body">
+          <h5 class="card-title">Estacion <%=@station.name%></h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">Ultimo reporte hace <%=@seconds%> segundos</h6>
+          <p class="card-text">
+            <ol class="list-group list-group-numbered">
+              <% lockers.each do |locker| %>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold">Casillero <%= locker.number %></div>
+                    Profundidad: <%= locker.height %>, Ancho: <%= locker.width %>, Alto: <%= locker.length %>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">
+                    <%= @state_per_locker[locker.number-1] == "1" ? 'Cargado' : 'No cargado' %>
+                  </span>
+                </li>
+              <% end %>
+            </ol>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
