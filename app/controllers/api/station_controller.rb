@@ -9,9 +9,18 @@ module Api
             locker = params[:locker].to_i
             loc = @station.lockers.where(number:locker).first
             ord = loc.orders.last
+            if not ord
+                render json:{password: "NoPass"}
+                return
+            end
             if ord.state == 1
+                loc.state = 2
+                loc.save
                 ord.state = 2
                 ord.save
+                message = "El casillero numero #{loc.number}, en la estacion #{@station.name} tiene su paquete.\n El codigo de retiro es: #{ord.retrieve_password}\n Instrucciones de apertura: Se tiene que escribir los seis numeros del codigo y se va abrir automaticamente, en caso de no funcionar, trate de presionar el símbolo # (usado para eliminar los caracteres) cinco veces y procede a escribir el codigo.\n Se va a encender la luz respectiva a su relación, abra la puerta numerada y retire el producto.\n Una vez terminado se cierra la puerta y se presiona el botón *."
+                InstructionSendingMailer.send_email(ord.operator_contact, 'Casillero reservado', message).deliver
+
                 render json:{password: ord.retrieve_password}
             else
                 render json:{password: "NoPass"}
@@ -24,8 +33,14 @@ module Api
             locker = params[:locker].to_i
             loc = @station.lockers.where(number:locker).first
             ord = loc.orders.last
+            if not ord
+                render json:{password: "NoPass"}
+                return
+            end
             if ord.state == 2
-                ord.state = 0
+                loc.state = 0
+                loc.save
+                ord.state = 3
                 ord.save
                 render json:{status: "OK"}
             else
@@ -34,11 +49,19 @@ module Api
         end
 
         def get_update
+
+            if params.key?(:state)
+                @station.last_sensed = params[:state]
+                @station.last_updated = Time.current
+                @station.save
+            end
+            
             password1 = "000000"
             password2 = "000000"
             password3 = "000000"
+            
             locker = @station.lockers.where(number: 1).first
-            ord = locker.orders.where(state: 0).first
+            ord = locker.orders.where(state: 0).last
             if ord
                 ord.state = 1
                 ord.save
@@ -46,7 +69,7 @@ module Api
             end
 
             locker = @station.lockers.where(number: 2).first
-            ord = locker.orders.where(state: 0).first
+            ord = locker.orders.where(state: 0).last
             if ord
                 ord.state = 1
                 ord.save
@@ -54,7 +77,7 @@ module Api
             end
 
             locker = @station.lockers.where(number: 3).first
-            ord = locker.orders.where(state: 0).first
+            ord = locker.orders.where(state: 0).last
             if ord
                 ord.state = 1
                 ord.save

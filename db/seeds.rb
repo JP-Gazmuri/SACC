@@ -15,9 +15,3 @@ s.lockers.create([
 ])
 
 e = Ecommerce.create(name: "Test", key: "access_key_for_eccommers")
-
-ord = Order.create([
-    {ecommerce: e, deposit_password: "873612", retrieve_password:"768734", locker: Locker.where(number: 1).first},
-    {ecommerce: e, deposit_password: "103668", retrieve_password:"083551", locker: Locker.where(number: 2).first},
-    {ecommerce: e, deposit_password: "999999", retrieve_password:"682661", locker: Locker.where(number: 3).first}
-])

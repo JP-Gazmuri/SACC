@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_12_050955) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_14_100244) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,6 +29,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_12_050955) do
     t.datetime "last_updated"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "last_sensed"
   end
 
   create_table "lockers", force: :cascade do |t|

@@ -71,7 +71,7 @@ module Api
                     if ord.save
                         smallest_locker.state = 1
                         smallest_locker.save
-                        message = "El casillero numero #{smallest_locker.number}, en la estacion #{station.name} esta esperando la entrega. El codigo de deposito es: #{ord.deposit_password}."
+                        message = "El casillero numero #{smallest_locker.number}, en la estacion #{station.name} esta esperando la entrega. El codigo de deposito es: #{ord.deposit_password}.\n Instrucciones de apertura: Se tiene que escribir los seis numeros del codigo y se va abrir automaticamente, en caso de no funcionar, trate de presionar el símbolo # (usado para eliminar los caracteres) cinco veces y procede a escribir el codigo.\n Se va a encender la luz respectiva a su relación, abra la puerta numerada y deposite el producto.\n Una vez terminado se cierra la puerta y se presiona el botón *."
                         InstructionSendingMailer.send_email(ord.operator_contact, 'Casillero reservado', message).deliver
 
                         render json:{result: "Casillero reservado"}
