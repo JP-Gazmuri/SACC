@@ -1,5 +1,5 @@
 class InstructionSendingMailer < ApplicationMailer
-    #default from: "sacc.g13@gmail.com"
+    default from: "jpgazmuri@miuandes.cl"
 
     def send_email(recipient_email, subject, content)
         @content = content
