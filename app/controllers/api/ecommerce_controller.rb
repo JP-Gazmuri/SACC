@@ -1,6 +1,6 @@
 module Api
     class EcommerceController < ApplicationController
-        
+
         skip_before_action :verify_authenticity_token
         before_action :check_key
 
@@ -15,7 +15,7 @@ module Api
         def available_lockers
 
             @lockers = Locker.where(state: 0)
-                  
+
             # Organize your data into a hash
             locker_data = {}
             @lockers.each do |locker|
@@ -27,9 +27,9 @@ module Api
                 height: locker.height
               }
             end
-            
+
             render json: locker_data
-          
+
         end
 
         def reserve_locker
@@ -46,15 +46,15 @@ module Api
               width: params[:width].to_i,
               height: params[:height].to_i
             }
-            
+
             station = LockerStation.find_by(name: params[:station])
 
 
-            
+
             if station
 
                 smallest_locker = Locker.find_smallest_locker(object_dimensions,station)
-        
+
                 if smallest_locker
                     ord = Order.new
                     ord.locker = smallest_locker
@@ -62,7 +62,6 @@ module Api
                     ord.client_contact = params[:client_email]
                     ord.operator_contact = params[:operator_email]
                     ord.ecommerce = @ecommerce
-                    ord.locker = smallest_locker
                     ord.deposit_password = generate_random_number_string
                     ord.retrieve_password = generate_random_number_string
                     ord.height = params[:height].to_i
@@ -77,40 +76,33 @@ module Api
                         render json:{result: "Casillero reservado"}
                         return
                     end
-                    
+
                 else
                     render json: { result: "No hay un casillero con las dimensiones suficientes" }
                     return
                 end
-            
+
             else
                 render json: { result: "No hay una estación de casilleros con ese nombre" }
                 return
             end
-            
-
-            #mail = params[:email]
-
-            #InstructionSendingMailer.send_email(mail, 'Casillero reservado', 'Test email that will be customized in the future').deliver
-
-            #render json:{result: "Finished"}
 
         end
 
         def confirm_order
-            
+
         end
-        
+
         def cancel_order
 
         end
 
         def active_orders
-        
+
         end
 
         def historic_orders
-        
+
         end
 
         private
@@ -126,4 +118,3 @@ module Api
 
     end
 end
-  
