@@ -8,9 +8,6 @@ Rails.application.routes.draw do
       get "get_report_deposit", on: :collection
       get "get_report_retire", on: :collection
       get "get_update", on: :collection
-      post "report_deposit", on: :collection
-      post "report_retire", on: :collection
-      post "update", on: :collection
     end
 
 

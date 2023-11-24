@@ -14,18 +14,23 @@ module Api
 
         def available_lockers
 
-            @lockers = Locker.where(state: 0)
 
-            # Organize your data into a hash
+            @stations = LockerStation.where(state: 0).all
+
             locker_data = {}
-            @lockers.each do |locker|
-              locker_data[locker.id] = {
-                estacion: locker.locker_station.name,
-                numero: locker.number,
-                length: locker.length,
-                width: locker.width,
-                height: locker.height
-              }
+            @stations.each do |s|
+                lockers = s.lockers.where(state: 0).order(:number)
+
+                locker_data[s.name] = {}
+                lockers.each do |locker|
+                    locker_data[s.name][locker.id] = {
+                        estacion: locker.locker_station.name,
+                        numero: locker.number,
+                        largo: locker.length,
+                        ancho: locker.width,
+                        altura: locker.height
+                    }
+                end
             end
 
             render json: locker_data
@@ -34,10 +39,10 @@ module Api
 
         def reserve_locker
 
-            required_params = ['station', 'access_key', 'height','width','length','client_email','operator_email']
+            required_params = ['station', 'access_key', 'height','width','length','client_email']
 
             if not required_params.all? { |param| params.key?(param) }
-                render json: { result: "Faltan parametros, los parametros necesarios son: 'station', 'access_key', 'height','width','length','client_email','operator_email'" }
+                render json: { result: "Faltan parametros, los parametros necesarios son: 'access_key', 'station', 'height','width','length','client_email'" }
                 return
             end
 
@@ -60,7 +65,6 @@ module Api
                     ord.locker = smallest_locker
                     ord.state = 0
                     ord.client_contact = params[:client_email]
-                    ord.operator_contact = params[:operator_email]
                     ord.ecommerce = @ecommerce
                     ord.deposit_password = generate_random_number_string
                     ord.retrieve_password = generate_random_number_string
@@ -73,7 +77,7 @@ module Api
                         message = "El casillero numero #{smallest_locker.number}, en la estacion #{station.name} esta esperando la entrega. El codigo de deposito es: #{ord.deposit_password}.\n Instrucciones de apertura: Se tiene que escribir los seis numeros del codigo y se va abrir automaticamente, en caso de no funcionar, trate de presionar el símbolo # (usado para eliminar los caracteres) cinco veces y procede a escribir el codigo.\n Se va a encender la luz respectiva a su relación, abra la puerta numerada y deposite el producto.\n Una vez terminado se cierra la puerta y se presiona el botón *."
                         InstructionSendingMailer.send_email(ord.operator_contact, 'Casillero reservado', message).deliver
 
-                        render json:{result: "Casillero reservado"}
+                        render json:{result: "Casillero reservado, id del pedido: #{ord.id}"}
                         return
                     end
 
