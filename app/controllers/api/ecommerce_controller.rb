@@ -13,9 +13,7 @@ module Api
         end
 
         def available_lockers
-
             @lockers = Locker.where(state: 0)
-
             # Organize your data into a hash
             locker_data = {}
             @lockers.each do |locker|
@@ -90,8 +88,50 @@ module Api
         end
 
         def confirm_order
+            # Obtener una orden de la URL
+            order = Order.find(params[:order_id])
 
+            # Cambiar el estado de la orden a 1
+            order.state = 1
+
+            # Agregar operator_contact a la orden
+            order.operator_contact = params[:operator_contact]
+
+            if params[:height] && params[:width] && params[:length]
+                # Verificar si las dimensiones caben en el locker ya definido en la orden como orden.locker
+                if order.locker.height >= params[:height].to_i && order.locker.width >= params[:width].to_i && order.locker.length >= params[:length].to_i
+                    order.height = params[:height].to_i
+                    order.width = params[:width].to_i
+                    order.length = params[:length].to_i
+                else
+                    # Verificar si las dimensiones caben en un locker más pequeño
+                    new_locker = Locker.find_smallest_locker({ height: params[:height].to_i, width: params[:width].to_i, length: params[:length].to_i }, order.locker.locker_station)
+                    if new_locker
+                        order.locker = new_locker
+                        order.height = params[:height].to_i
+                        order.width = params[:width].to_i
+                        order.length = params[:length].to_i
+                    else
+                        # Si no hay lockers disponibles, cambiar el estado de la orden a cancelado y proporcionar un mensaje en el JSON que explique que no se pudo confirmar la reserva porque no hay casillero con las dimensiones
+                        order.state = "cancelado"
+                        render json: { message: "No se pudo confirmar la reserva porque no hay casillero con las dimensiones solicitadas." }
+                        return
+                    end
+                end
+            else
+                # Si no se proporcionan otras dimensiones, mantener las dimensiones del locker ya definido
+                order.height = order.locker.height
+                order.width = order.locker.width
+                order.length = order.locker.length
+            end
+
+            # Guardar los cambios en la orden
+            order.save!
+
+            # Devolver la orden actualizada como JSON
+            render json: order
         end
+
 
         def cancel_order
 
