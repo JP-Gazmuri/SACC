@@ -134,7 +134,13 @@ module Api
 
 
         def cancel_order
+            # Obtener una orden de la URL
+            order = Order.find(params[:order_id])
 
+            # Cambiar el estado de la orden a 1
+            order.state = 4
+
+            order.save!
         end
 
         def active_orders
