@@ -157,6 +157,10 @@ module Api
             render json: orders
         end
 
+        def order_state
+            order = Order.find(params[:order_id])
+            render json: order.state
+        end
         private
 
         def check_key

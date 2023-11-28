@@ -21,7 +21,7 @@ Rails.application.routes.draw do
       put "cancel_order"
       get "historic_orders"
       get "active_orders"
-
+      get "order_state"
     end
   end
 
