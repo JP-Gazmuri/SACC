@@ -17,6 +17,11 @@ Rails.application.routes.draw do
     resources :ecommerce do
       post "available_lockers",on: :collection
       post "reserve_locker", on: :collection
+      put "confirm_order"
+      put "cancel_order"
+      get "historic_orders"
+      get "active_orders"
+
     end
   end
 
