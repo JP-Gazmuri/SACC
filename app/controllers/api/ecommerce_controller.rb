@@ -144,11 +144,17 @@ module Api
         end
 
         def active_orders
+            # Obtener todas las órdenes que estén activas
+            orders = Order.where.not(state: [3, 4])
 
+            # Devolver las órdenes como JSON
+            render json: orders
         end
 
         def historic_orders
-
+            orders = Order.where(state: 3)
+            # Devolver las órdenes como JSON
+            render json: orders
         end
 
         private
