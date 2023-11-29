@@ -8,20 +8,20 @@ module Api
 
             locker = params[:locker].to_i
             loc = @station.lockers.where(number:locker).first
-            ord = loc.orders.where(state: 2).order(modified_at: :desc).first
-            if not ord
-                render json:{password: "NoPass"}
-                return
-            end
+            ord = loc.orders.where(state: 2).order(updated_at: :desc).first
             if ord
-                loc.state = 2
-                loc.save
                 ord.state = 3
                 ord.save
                 message = "El casillero numero #{loc.number}, en la estacion #{@station.name} tiene su paquete.\n El codigo de retiro es: #{ord.retrieve_password}\n Instrucciones de apertura: Se tiene que escribir los seis numeros del codigo y se va abrir automaticamente, en caso de no funcionar, trate de presionar el símbolo # (usado para eliminar los caracteres) cinco veces y procede a escribir el codigo.\n Se va a encender la luz respectiva a su relación, abra la puerta numerada y retire el producto.\n Una vez terminado se cierra la puerta y se presiona el botón *."
                 InstructionSendingMailer.send_email(ord.client_contact, 'Casillero reservado', message).deliver
+            end
+            if loc.state = 1
 
-                render json:{password: ord.retrieve_password}
+                loc.state = 2
+                byebug
+                if loc.save
+                    render json:{password: loc.codigo_r}
+                end
             else
                 render json:{password: "NoPass"}
             end
@@ -33,15 +33,16 @@ module Api
             locker = params[:locker].to_i
             loc = @station.lockers.where(number:locker).first
             ord = loc.orders.where(state: 3).order(modified_at: :desc).first
-            if not ord
-                render json:{status: "Fail"}
-                return
-            end
             if ord
-                loc.state = 0
-                loc.save
                 ord.state = 4
                 ord.save
+            end
+            if ord
+
+                loc.state = 0
+                loc.already_informed = 0
+                loc.save
+
                 render json:{status: "OK"}
             else
                 render json:{status: "Fail"}
@@ -63,9 +64,15 @@ module Api
             lockers.each do |l|
                 order = l.orders.where(state: 1).order(created_at: :desc).first
                 if order
-                    pass = order.deposit_password
+                    pass = l.codigo_d
+                    l.already_informed = 1
+                    l.save
                     order.state = 2
                     order.save
+                elsif l.estado == "Reservado" && l.already_informed == 0 && l.codigo_r != ""
+                    pass = l.codigo_d
+                    l.already_informed = 1
+                    l.save
                 else
                     pass = "000000"
                 end

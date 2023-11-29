@@ -1,9 +1,11 @@
 class Locker < ApplicationRecord
     belongs_to :locker_station
     has_many :orders
-
+    before_save :update_states
+    after_save :create_log
 
     enum state: {libre:0, confirmado: 1, ocupado:2, estacion_no_activa: 3}
+    enum sensors: {Vacio: 0,Lleno:1}
 
     def self.find_smallest_locker(object_dimensions,station)
 
@@ -14,12 +16,12 @@ class Locker < ApplicationRecord
 
       # All six possible orientations
       orientations = [
-        [:length, :width, :height],
-        [:length, :height, :width],
-        [:width, :length, :height],
-        [:width, :height, :length],
-        [:height, :length, :width],
-        [:height, :width, :length]
+        [:largo, :ancho, :alto],
+        [:largo, :alto, :ancho],
+        [:ancho, :largo, :alto],
+        [:ancho, :alto, :largo],
+        [:alto, :largo, :ancho],
+        [:alto, :ancho, :largo]
       ]
 
       available_lockers.each do |locker|
@@ -43,11 +45,48 @@ class Locker < ApplicationRecord
 
     private
 
+    def create_log
+      changes = saved_changes
+      if changes.key?("estado")
+        l = Log.new
+        l.casillero = self.id
+        l.accion = "Cambio a #{changes["estado"][1]}"
+        l.save
+      end
+    end
+
+    def update_states
+      changes = self.changes
+      if changes.key?("state")
+        if changes["state"][1] ==  "libre"
+          self.estado = "Disponible"
+          self.already_informed = 0
+          self.codigo_r = ""
+          self.codigo_d = ""
+        elsif changes["state"][1] ==  "confirmado"
+          self.estado = "Reservado"
+        elsif  changes["state"][1] ==  "ocupado"
+          self.estado = "Ocupado"
+        end
+      elsif changes.key?("estado")
+        if changes["estado"][1] ==  "Disponible"
+          self.state = "libre"
+          self.already_informed = 0
+          self.codigo_r = ""
+          self.codigo_d = ""
+        elsif changes["estado"][1] ==  "Reservado"
+          self.state = "confirmado"
+        elsif  changes["estado"][1] ==  "Ocupado"
+          self.state = "ocupado"
+        end
+      end
+    end
+
     def self.locker_can_accommodate?(locker, object_dimensions, orientation)
       # Check if the locker can accommodate the object based on the given orientation
-      locker.send(orientation[0]) >= object_dimensions[:length] &&
-        locker.send(orientation[1]) >= object_dimensions[:width] &&
-        locker.send(orientation[2]) >= object_dimensions[:height]
+      locker.send(orientation[0]) >= object_dimensions[:largo] &&
+        locker.send(orientation[1]) >= object_dimensions[:ancho] &&
+        locker.send(orientation[2]) >= object_dimensions[:alto]
     end
 
 end

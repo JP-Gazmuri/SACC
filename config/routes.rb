@@ -15,6 +15,10 @@ Rails.application.routes.draw do
       post "available_lockers",on: :collection
       post "reserve_locker", on: :collection
     end
+
+    resources :sacc do
+      get "logs", on: :collection
+    end
   end
 
   resources :stations
