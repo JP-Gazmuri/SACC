@@ -48,10 +48,12 @@ class Locker < ApplicationRecord
     def create_log
       changes = saved_changes
       if changes.key?("estado")
-        l = Log.new
-        l.casillero = self.id
-        l.accion = "Cambio a #{changes["estado"][1]}"
-        l.save
+        if changes["estado"][0] != changes["estado"][1]
+          l = Log.new
+          l.casillero = self.id
+          l.accion = "Cambio a #{changes["estado"][1]}"
+          l.save
+        end
       end
     end
 

@@ -11,6 +11,7 @@ module Api
             ord = loc.orders.where(state: 2).order(updated_at: :desc).first
             if ord
                 ord.state = 3
+                ord.delivery_time = Time.current
                 ord.save
                 message = "El casillero numero #{loc.number}, en la estacion #{@station.name} tiene su paquete.\n El codigo de retiro es: #{ord.retrieve_password}\n Instrucciones de apertura: Se tiene que escribir los seis numeros del codigo y se va abrir automaticamente, en caso de no funcionar, trate de presionar el símbolo # (usado para eliminar los caracteres) cinco veces y procede a escribir el codigo.\n Se va a encender la luz respectiva a su relación, abra la puerta numerada y retire el producto.\n Una vez terminado se cierra la puerta y se presiona el botón *."
                 InstructionSendingMailer.send_email(ord.client_contact, 'Casillero reservado', message).deliver
@@ -35,6 +36,7 @@ module Api
             ord = loc.orders.where(state: 3).order(modified_at: :desc).first
             if ord
                 ord.state = 4
+                ord.retrieve_time = Time.current
                 ord.save
             end
             if ord
@@ -50,20 +52,29 @@ module Api
         end
 
         def get_update
+            lockers = @station.lockers
 
             if params.key?(:state)
-                @station.last_sensed = params[:state]
-                @station.last_updated = Time.current
-                @station.save
+                if @station.last_sensed != params[:state]
+                    @station.last_sensed = params[:state]
+                    @station.last_updated = Time.current
+                    @station.save
+                    partitions = params[:state].split(",")
+                    for i in 0..2
+                        lockers[i].sensors = partitions[i].to_i
+                        lockers[i].save
+                    end
+
+
+                end
             end
 
             passwords = {}
 
-            lockers = @station.lockers
 
             lockers.each do |l|
                 order = l.orders.where(state: 1).order(created_at: :desc).first
-                if order
+                if order && l.already_informed == 0
                     pass = l.codigo_d
                     l.already_informed = 1
                     l.save
