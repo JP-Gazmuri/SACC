@@ -8,15 +8,16 @@ Rails.application.routes.draw do
       get "get_report_deposit", on: :collection
       get "get_report_retire", on: :collection
       get "get_update", on: :collection
-      post "report_deposit", on: :collection
-      post "report_retire", on: :collection
-      post "update", on: :collection
     end
 
 
     resources :ecommerce do
       post "available_lockers",on: :collection
       post "reserve_locker", on: :collection
+    end
+
+    resources :sacc do
+      get "logs", on: :collection
     end
   end
 

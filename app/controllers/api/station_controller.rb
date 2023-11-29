@@ -8,20 +8,20 @@ module Api
 
             locker = params[:locker].to_i
             loc = @station.lockers.where(number:locker).first
-            ord = loc.orders.last
-            if not ord
-                render json:{password: "NoPass"}
-                return
-            end
-            if ord.state == 1
-                loc.state = 2
-                loc.save
-                ord.state = 2
+            ord = loc.orders.where(state: 2).order(updated_at: :desc).first
+            if ord
+                ord.state = 3
                 ord.save
                 message = "El casillero numero #{loc.number}, en la estacion #{@station.name} tiene su paquete.\n El codigo de retiro es: #{ord.retrieve_password}\n Instrucciones de apertura: Se tiene que escribir los seis numeros del codigo y se va abrir automaticamente, en caso de no funcionar, trate de presionar el símbolo # (usado para eliminar los caracteres) cinco veces y procede a escribir el codigo.\n Se va a encender la luz respectiva a su relación, abra la puerta numerada y retire el producto.\n Una vez terminado se cierra la puerta y se presiona el botón *."
                 InstructionSendingMailer.send_email(ord.client_contact, 'Casillero reservado', message).deliver
+            end
+            if loc.state = 1
 
-                render json:{password: ord.retrieve_password}
+                loc.state = 2
+                byebug
+                if loc.save
+                    render json:{password: loc.codigo_r}
+                end
             else
                 render json:{password: "NoPass"}
             end
@@ -32,16 +32,17 @@ module Api
 
             locker = params[:locker].to_i
             loc = @station.lockers.where(number:locker).first
-            ord = loc.orders.last
-            if not ord
-                render json:{status: "Fail"}
-                return
-            end
-            if ord.state == 2
-                loc.state = 0
-                loc.save
-                ord.state = 3
+            ord = loc.orders.where(state: 3).order(modified_at: :desc).first
+            if ord
+                ord.state = 4
                 ord.save
+            end
+            if ord
+
+                loc.state = 0
+                loc.already_informed = 0
+                loc.save
+
                 render json:{status: "OK"}
             else
                 render json:{status: "Fail"}
@@ -56,34 +57,30 @@ module Api
                 @station.save
             end
 
-            password1 = "000000"
-            password2 = "000000"
-            password3 = "000000"
+            passwords = {}
 
-            locker = @station.lockers.where(number: 1).first
-            ord = locker.orders.where(state: 0).last
-            if ord
-                ord.state = 1
-                ord.save
-                password1 = ord.deposit_password
+            lockers = @station.lockers
+
+            lockers.each do |l|
+                order = l.orders.where(state: 1).order(created_at: :desc).first
+                if order
+                    pass = l.codigo_d
+                    l.already_informed = 1
+                    l.save
+                    order.state = 2
+                    order.save
+                elsif l.estado == "Reservado" && l.already_informed == 0 && l.codigo_r != ""
+                    pass = l.codigo_d
+                    l.already_informed = 1
+                    l.save
+                else
+                    pass = "000000"
+                end
+                passwords["password#{l.number}"] = pass
             end
 
-            locker = @station.lockers.where(number: 2).first
-            ord = locker.orders.where(state: 0).last
-            if ord
-                ord.state = 1
-                ord.save
-                password2 = ord.deposit_password
-            end
+            render json: passwords
 
-            locker = @station.lockers.where(number: 3).first
-            ord = locker.orders.where(state: 0).last
-            if ord
-                ord.state = 1
-                ord.save
-                password3 = ord.deposit_password
-            end
-            render json: { password1: password1,password2: password2,password3: password3, }
         end
 
         private

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_14_100244) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_28_190237) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -36,12 +36,27 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_14_100244) do
     t.bigint "locker_station_id", null: false
     t.integer "number"
     t.integer "state", default: 0
-    t.integer "height"
-    t.integer "width"
-    t.integer "length"
+    t.integer "alto"
+    t.integer "ancho"
+    t.integer "largo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "estado", default: "Disponible"
+    t.string "sensorm", default: "Cerrado"
+    t.integer "sensors", default: 0
+    t.string "propietario", default: "G13"
+    t.string "codigo_d", default: "000000"
+    t.string "codigo_r", default: "000000"
+    t.integer "already_informed", default: 0
     t.index ["locker_station_id"], name: "index_lockers_on_locker_station_id"
+  end
+
+  create_table "logs", force: :cascade do |t|
+    t.string "accion"
+    t.integer "casillero"
+    t.datetime "fecha"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }
   end
 
   create_table "orders", force: :cascade do |t|
