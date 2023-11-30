@@ -93,6 +93,9 @@ GEM
     erubi (1.12.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.6.0)
@@ -118,6 +121,7 @@ GEM
     mini_mime (1.1.5)
     minitest (5.20.0)
     msgpack (1.7.2)
+    multi_xml (0.6.0)
     net-imap (0.4.4)
       date
       net-protocol
@@ -141,6 +145,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (2.2.8)
+    rack-cors (2.0.1)
+      rack (>= 2.0.0)
     rack-test (2.1.0)
       rack (>= 1.3)
     rails (7.0.8)
@@ -226,11 +232,13 @@ DEPENDENCIES
   capybara
   cssbundling-rails
   debug
+  httparty (~> 0.21.0)
   jbuilder
   jsbundling-rails
   mail
   pg (~> 1.1)
   puma (~> 5.0)
+  rack-cors (~> 2.0)
   rails (~> 7.0.8)
   selenium-webdriver
   sprockets-rails

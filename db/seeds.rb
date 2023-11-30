@@ -6,7 +6,7 @@
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
 
-s = LockerStation.create(name: "Casillero_G13",access_key: "This_is_the_first_key")
+s = LockerStation.create(name: "G13",access_key: "This_is_the_first_key",state:0)
 
 
 s.lockers.create([
