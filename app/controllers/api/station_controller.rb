@@ -51,7 +51,7 @@ module Api
         end
 
         def get_update
-            lockers = @station.lockers
+            lockers = @station.lockers.order(number: :asc)
 
             if params.key?(:state)
                 if @station.last_sensed != params[:state]
