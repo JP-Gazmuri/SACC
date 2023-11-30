@@ -19,7 +19,6 @@ module Api
             if loc.state = 1
 
                 loc.state = 2
-                byebug
                 if loc.save
                     render json:{password: loc.codigo_r}
                 end
