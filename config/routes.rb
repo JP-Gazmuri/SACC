@@ -14,7 +14,13 @@ Rails.application.routes.draw do
     resources :ecommerce do
       post "available_lockers",on: :collection
       post "reserve_locker", on: :collection
+      post "confirm_order", on: :collection
+      post "cancel_order", on: :collection
+      post "historic_orders", on: :collection
+      post "active_orders", on: :collection
+      post "order_state", on: :collection
     end
+  end
 
     resources :sacc do
       get "logs", on: :collection
