@@ -4,7 +4,7 @@ module Api
         skip_before_action :verify_authenticity_token
         before_action :check_key
         before_action :cancel_late_orders
-        before_action :update_lockers, only: [:available_lockers, :reserve_locker,:confirm_order]
+        #before_action :update_lockers, only: [:available_lockers, :reserve_locker,:confirm_order]
 
         require 'active_support/time'
         require 'securerandom'
@@ -153,12 +153,21 @@ module Api
 
         def cancel_order
             # Obtener una orden de la URL
-            order = Order.find(params[:order_id])
+            order = @ecommerce.orders.find(params[:order_id])
 
             # Cambiar el estado de la orden a 1
-            order.state = 4
+            if order
+                order.state = 4
 
-            order.save!
+                order.save!
+                l = Locker.find(order.locker_id)
+                l.state = 0
+                l.save
+                render json: {result: "orden cancelada"}
+
+            else
+                render json: {result: "ID incorrecto"}
+            end
         end
 
         def active_orders
