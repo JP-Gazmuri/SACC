@@ -77,3 +77,5 @@ group :test do
 end
 
 gem "mail"
+
+gem "rack-cors", "~> 2.0"
