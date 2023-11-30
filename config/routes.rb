@@ -20,7 +20,7 @@ Rails.application.routes.draw do
       post "active_orders", on: :collection
       post "order_state", on: :collection
     end
-  end
+
 
     resources :sacc do
       get "logs", on: :collection
