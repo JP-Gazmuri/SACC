@@ -33,7 +33,7 @@ module Api
 
             locker = params[:locker].to_i
             loc = @station.lockers.where(number:locker).first
-            ord = loc.orders.where(state: 3).order(modified_at: :desc).first
+            ord = loc.orders.where(state: 3).order(updated_at: :desc).first
             if ord
                 ord.state = 4
                 ord.retrieve_time = Time.current

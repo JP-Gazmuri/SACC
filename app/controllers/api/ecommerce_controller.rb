@@ -8,8 +8,12 @@ module Api
 
         require 'active_support/time'
         require 'securerandom'
+        require 'net/http'
+        require 'uri'
+        require 'httparty'
+        require 'json'
 
-        ROUTES = {G11:{},G14:{lockers: "https://pds3.vercel.app/estaciones/id/casilleros", logs:"https://pds3.vercel.app/api/logs"}}
+        ROUTES = {G11:{lockers:"", logs:""},G14:{lockers: "https://pds3.vercel.app/estaciones/id/casilleros", logs:"https://pds3.vercel.app/api/logs"}}
 
         def generate_random_number_string
             random_number = SecureRandom.random_number(10**6)
@@ -81,6 +85,10 @@ module Api
                         smallest_locker.codigo_r = ord.retrieve_password
                         smallest_locker.codigo_d = ord.deposit_password
                         smallest_locker.save
+
+                        if station.name == "G14"
+
+                        end
 
                         render json:{result: "Casillero reservado, id del pedido: #{ord.id}"}
                         return
@@ -175,8 +183,27 @@ module Api
 
         private
 
-        def update_lockers
 
+        def update_lockers
+            stations = LockerStation.all
+
+            stations.each do |station|
+                if station.name != "G13"
+                    response = HTTParty.get(ROUTES[station.name.to_sym][:lockers])
+
+                    # Access the response data
+                    response_code = response.code
+                    response_body = response.body
+                    json_data = JSON.parse(response_body)
+                    lockers = station.lockers
+                    lockers.each do |locker|
+                        if locker.estado != json_data["data"][locker.number-1]["estado"]
+                            locker.estado = json_data["data"][locker.number-1]["estado"]
+                            locker.save
+                        end
+                    end
+                end
+            end
         end
 
         def cancel_late_orders

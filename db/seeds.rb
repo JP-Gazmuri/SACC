@@ -6,12 +6,12 @@
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
 
-s = LockerStation.create(name: "Casillero_G13",access_key: "This_is_the_first_key")
+s = LockerStation.create(name: "G13",access_key: "This_is_the_first_key",state:0)
 
 s.lockers.create([
-    {height: 45, width: 20, length: 40, number: 1},
-    {height: 45, width: 30, length: 50, number: 2},
-    {height: 45, width: 40, length: 60, number: 3}
+    {alto: 45, ancho: 20, largo: 40, number: 1},
+    {alto: 45, ancho: 30, largo: 50, number: 2},
+    {alto: 45, ancho: 40, largo: 60, number: 3}
 ])
 
 e = Ecommerce.create(name: "Test", key: "access_key_for_eccommers")
