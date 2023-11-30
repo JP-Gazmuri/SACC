@@ -86,9 +86,9 @@ class Locker < ApplicationRecord
 
     def self.locker_can_accommodate?(locker, object_dimensions, orientation)
       # Check if the locker can accommodate the object based on the given orientation
-      locker.send(orientation[0]) >= object_dimensions[:largo] &&
-        locker.send(orientation[1]) >= object_dimensions[:ancho] &&
-        locker.send(orientation[2]) >= object_dimensions[:alto]
+      locker.send(orientation[0]) >= object_dimensions[:length] &&
+        locker.send(orientation[1]) >= object_dimensions[:width] &&
+        locker.send(orientation[2]) >= object_dimensions[:height]
     end
 
 end

@@ -35,9 +35,9 @@ module Api
                     locker_data[s.name][locker.id] = {
                         estacion: locker.locker_station.name,
                         numero: locker.number,
-                        largo: locker.length,
-                        ancho: locker.width,
-                        altura: locker.height
+                        largo: locker.largo,
+                        ancho: locker.ancho,
+                        altura: locker.alto
                     }
                 end
             end
@@ -77,9 +77,9 @@ module Api
                     ord.ecommerce = @ecommerce
                     ord.deposit_password = generate_random_number_string
                     ord.retrieve_password = generate_random_number_string
-                    ord.alto = params[:height].to_i
-                    ord.ancho = params[:width].to_i
-                    ord.largo = params[:length].to_i
+                    ord.height = params[:height].to_i
+                    ord.width = params[:width].to_i
+                    ord.length = params[:length].to_i
                     if ord.save
                         smallest_locker.state = 1
                         smallest_locker.codigo_r = ord.retrieve_password
@@ -110,7 +110,7 @@ module Api
             # Obtener una orden de la URL
             order = Order.find(params[:order_id])
 
-            if order.state != 0
+            if order.state != "reservado"
                 render json: {result: "La reserva fue denegada porque hubo un problema con el id de la orden entregado. Posibles razones: cancelación automática por tiempo en reserva, equivocacion en la entrega a confirmar"}
                 return
             end
@@ -163,20 +163,20 @@ module Api
 
         def active_orders
             # Obtener todas las órdenes que estén activas
-            orders = Order.where.not(state: [3, 4])
+            orders = @ecommerce.orders.where.not(state: [3, 4])
 
             # Devolver las órdenes como JSON
             render json: orders
         end
 
         def historic_orders
-            orders = Order.where(state: 3)
+            orders = @ecommerce.orders.where(state: 3)
             # Devolver las órdenes como JSON
             render json: orders
         end
 
         def order_state
-            order = Order.find(params[:order_id])
+            order = @ecommerce.orders.find(params[:order_id])
             render json: order.state
         end
 
@@ -210,8 +210,12 @@ module Api
             time_threshold = 10.minutes.ago
             orders = Order.where(state: 0).where('created_at < ?', time_threshold)
             orders.each do |order|
-                order.state = 4
+
+                order.state = 5
                 order.save
+                l = Locker.find(order.locker_id)
+                l.state = 0
+                l.save
             end
         end
 

@@ -38,7 +38,7 @@ module Api
                 ord.retrieve_time = Time.current
                 ord.save
             end
-            if ord
+            if loc.state == 2
 
                 loc.state = 0
                 loc.already_informed = 0
