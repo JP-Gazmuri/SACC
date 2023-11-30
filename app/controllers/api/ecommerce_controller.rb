@@ -86,9 +86,7 @@ module Api
                         smallest_locker.codigo_d = ord.deposit_password
                         smallest_locker.save
 
-                        if station.name == "G14"
 
-                        end
 
                         render json:{result: "Casillero reservado, id del pedido: #{ord.id}"}
                         return
@@ -143,10 +141,11 @@ module Api
                     end
                 end
             end
-
             # Guardar los cambios en la orden
             order.save!
 
+            message = "El casillero numero #{order.locker.number}, en la estacion #{order.locker.propietario} esta listo para recibir el paquete.\n El codigo de retiro es: #{order.deposit_password}\n Instrucciones de apertura: Se tiene que escribir los seis numeros del codigo y se va abrir automaticamente, en caso de no funcionar, trate de presionar el símbolo # (usado para eliminar los caracteres) cinco veces y procede a escribir el codigo.\n Se va a encender la luz respectiva a su relación, abra la puerta numerada y retire el producto.\n Una vez terminado se cierra la puerta y se presiona el botón *."
+            InstructionSendingMailer.send_email(order.client_contact, 'Casillero reservado', message).deliver
             # Devolver la orden actualizada como JSON
             render json: order
         end
