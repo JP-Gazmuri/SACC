@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   end
 
   resources :stations
+  resources :ecommerces
   # config/routes.rb
   get 'stations/lockers_for_estacion/:estacion_id', to: 'stations#lockers_for_estacion', defaults: { format: :json }
   # En tu archivo routes.rb

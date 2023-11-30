@@ -1,0 +1,29 @@
+<%= form_with(model: ecommerce, local: true) do |form| %>
+    <% if ecommerce.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(ecommerce.errors.count, "error") %> prohibited this ecommerce from being saved:</h2>
+  
+        <ul>
+          <% ecommerce.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  
+    <div class="field">
+      <%= form.label :name %>
+      <%= form.text_field :name, id: :ecommerce_name %>
+    </div>
+  
+  
+    <div class="field">
+    <%= form.label :state %>
+    <%= form.select :state, Ecommerce.states.keys.map { |state| [state.humanize, state] }, { prompt: "Select State" } %>
+  </div>
+  
+    <div class="actions">
+      <%= form.submit %>
+    </div>
+  <% end %>
+  
