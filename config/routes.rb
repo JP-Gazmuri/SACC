@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
-  # root "articles#index"
+  root "stations#index"
   namespace :api, defaults: { format: :json } do
     resources :station do
       get "get_report_deposit", on: :collection
@@ -22,5 +22,9 @@ Rails.application.routes.draw do
   end
 
   resources :stations
+  # config/routes.rb
+  get 'stations/lockers_for_estacion/:estacion_id', to: 'stations#lockers_for_estacion', defaults: { format: :json }
+  # En tu archivo routes.rb
+  get 'stations/historic_for_locker/:locker_number', to: 'stations#historic_for_locker', defaults: { format: :json }
 
 end

@@ -1,0 +1,158 @@
+<body>
+
+<header>
+
+  <div class="logosec">
+    <div class="logo">SACC</div>
+    <img src= "https://media.geeksforgeeks.org/wp-content/uploads/20221210182541/Untitled-design-(30).png"
+         class="icn menuicn"
+         id="menuicn"
+         alt="menu-icon">
+  </div>
+
+  <div class="message">
+    <div class="notification-circle">
+      <span class="notification-count">5</span>
+    </div>
+    <div class="notification-popup hidden">
+      <div class="notification-item" onclick="">New reservation.</div>
+      <div class="notification-item" onclick="">Package non retrieve !</div>
+      <div class="see-all" onclick="">See All</div>
+    </div>
+  </div>
+
+</header>
+
+<div class="main-container">
+  <div class="navcontainer">
+    <nav class="nav">
+      <div class="nav-upper-options">
+        <div class="nav-option option1">
+          <a href="index.html" class="nav-link">
+            <img src= "https://media.geeksforgeeks.org/wp-content/uploads/20221210182148/Untitled-design-(29).png"
+                 class="nav-img"
+                 alt="dashboard">
+            <h3> Dashboard</h3>
+          </a>
+        </div>
+
+        <div class="nav-option option5">
+          <a href="reservation.html" class="nav-link">
+            <img src= "https://media.geeksforgeeks.org/wp-content/uploads/20221210183323/10.png"
+                 class="nav-img"
+                 alt="blog">
+            <h3> Reservations</h3>
+          </a>
+        </div>
+
+        <div class="nav-option logout">
+          <img src= "https://media.geeksforgeeks.org/wp-content/uploads/20221210183321/7.png"
+               class="nav-img"
+               alt="logout">
+          <h3>Logout</h3>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="report-container">
+      <div class="report-header">
+        <h1 class="recent-Articles"><%=@estaciones.first.name %></h1>
+        <div class="estacion-buttons-container" id="estacion-buttons-container">
+          <% @estaciones.each do |estacion| %>
+            <button class="estacion-button" data-title="<%= estacion.name %>" data-name ="<%= estacion.id %>" >
+              <%= estacion.name %>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="report-body">
+        <div class="report-topic-heading">
+          <h3 class="t-op">ID</h3>
+          <h3 class="t-op">Dimensiones</h3>
+          <h3 class="t-op">Desde</h3>
+          <h3 class="t-op">Estado</h3>
+        </div>
+      </div>
+      <div class="items">
+        <% @lockers.each do |locker| %>
+          <div class="item1 <%= 'red-background' if locker.sensors == 0 && locker.state == 'ocupado' %>">
+            <%puts(locker.sensors, locker.state) %>
+            <h3 class="t-op-nextlvl history">Locker <%= locker.number %></h3>
+            <h3 class="t-op-nextlvl"><%= "#{locker.alto}x#{locker.largo}x#{locker.ancho} cm" %></h3>
+            <h3 class="t-op-nextlvl"><%= locker.updated_at.strftime('%H:%M:%S') %></h3>
+            <h3 class="t-op-nextlvl label-tag"><%= locker.estado %></h3>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="box-container">
+      <% @locker_stats.each do |locker_stat| %>
+        <div class="box box<%= locker_stat[:locker_number] %>">
+          <div class="text">
+            <h2 class="topic-heading"><%= locker_stat[:percentage_occupied_changes] %>%</h2>
+            <h2 class="topic">Locker <%= locker_stat[:locker_number] %></h2>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+
+    <div class="report-container">
+      <div class="report-header">
+        <h1 class="historic-title">Historic</h1>
+        <div class="historic-buttons" id="historic-buttons-container">
+          <% @lockers.each do |locker| %>
+            <button class="historic-button" data-title="<%= locker.id %>">
+              Locker <%= locker.number %>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="report-body">
+        <div class="report-topic-heading">
+          <h3 class="t-op">ID</h3>
+          <h3 class="t-op">Date</h3>
+          <h3 class="t-op">Action</h3>
+        </div>
+
+        <div class="items" id="historic-items-container">
+          <div class="item1">
+            <h3 class="t-op-nextlvl casillo">Locker 1</h3>
+            <h3 class="t-op-nextlvl">16/11/2023</h3>
+            <h3 class="t-op-nextlvl label-tag">Delivered</h3>
+          </div>
+
+          <div class="item1">
+            <h3 class="t-op-nextlvl casillo">Locker 2</h3>
+            <h3 class="t-op-nextlvl">16/11/2023</h3>
+            <h3 class="t-op-nextlvl label-tag">Delivered</h3>
+          </div>
+
+          <div class="item1">
+            <h3 class="t-op-nextlvl casillo">Locker 3</h3>
+            <h3 class="t-op-nextlvl">16/11/2023</h3>
+            <h3 class="t-op-nextlvl label-tag">Delivered</h3>
+          </div>
+
+          <div class="item1 hidden">
+            <h3 class="t-op-nextlvl casillo">Locker 1</h3>
+            <h3 class="t-op-nextlvl">16/11/2023</h3>
+            <h3 class="t-op-nextlvl label-tag">Reserved</h3>
+          </div>
+
+        </div>
+        <div class="load-more-container">
+          <button class="load-more-button">&#8595; Load More</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
